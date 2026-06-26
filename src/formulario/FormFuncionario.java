@@ -452,7 +452,7 @@ public class FormFuncionario extends javax.swing.JDialog {
         fun.setNome_fun(edNome.getText());
         fun.setCpf_fun(edCpf.getText());
         fun.setRg_fun(edRg.getText());
-        fun.setEndereço_fun(edEndereco.getText());
+        fun.setEndereco_fun(edEndereco.getText()); // FIXED: setter renomeado sem acento
         fun.setTelefone_fun(edTelefone.getText());
         fun.setEmail_fun(edEmail.getText());
         fun.setFuncao_fun(cbFuncao.getSelectedItem().toString());
@@ -470,7 +470,7 @@ public class FormFuncionario extends javax.swing.JDialog {
         f.setNome_fun(edNome.getText());
         f.setCpf_fun(edCpf.getText());
         f.setRg_fun(edRg.getText());
-        f.setEndereço_fun(edEndereco.getText());
+        f.setEndereco_fun(edEndereco.getText()); // FIXED: setter renomeado sem acento
         f.setTelefone_fun(edTelefone.getText());
         f.setEmail_fun(edEmail.getText());
         f.setFuncao_fun(cbFuncao.getSelectedItem().toString());
@@ -573,7 +573,7 @@ public class FormFuncionario extends javax.swing.JDialog {
         DefaultTableModel modelo = (DefaultTableModel) tabela.getModel();
         modelo.setRowCount(0);
         for (Funcionario f : lista) {
-            modelo.addRow(new Object[]{f.getCod_fun(),f.getNome_fun(),f.getCpf_fun(), f.getRg_fun(), f.getEndereço_fun(),f.getTelefone_fun(), f.getEmail_fun() , f.getFuncao_fun(), f.getDepartamento_fun()});
+            modelo.addRow(new Object[]{f.getCod_fun(),f.getNome_fun(),f.getCpf_fun(), f.getRg_fun(), f.getEndereco_fun(),f.getTelefone_fun(), f.getEmail_fun() , f.getFuncao_fun(), f.getDepartamento_fun()}); // FIXED: getter renomeado sem acento
         }
 }
        
@@ -583,7 +583,7 @@ public class FormFuncionario extends javax.swing.JDialog {
         DefaultTableModel modelo = (DefaultTableModel) tabela.getModel();
         modelo.setRowCount(0);
         for (Funcionario f : lista) {
-            modelo.addRow(new Object[]{f.getCod_fun(),f.getNome_fun(),f.getCpf_fun(), f.getRg_fun(), f.getEndereço_fun(),f.getTelefone_fun(), f.getEmail_fun() , f.getFuncao_fun(), f.getDepartamento_fun()});
+            modelo.addRow(new Object[]{f.getCod_fun(),f.getNome_fun(),f.getCpf_fun(), f.getRg_fun(), f.getEndereco_fun(),f.getTelefone_fun(), f.getEmail_fun() , f.getFuncao_fun(), f.getDepartamento_fun()}); // FIXED: getter renomeado sem acento
         }
 }
     /**

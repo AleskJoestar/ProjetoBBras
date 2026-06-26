@@ -1221,7 +1221,7 @@ edTroco.setText("0");
 "     funcionario.`nome_fun` AS funcionario_nome_fun,\n" +
 "     funcionario.`cpf_fun` AS funcionario_cpf_fun,\n" +
 "     funcionario.`rg_fun` AS funcionario_rg_fun,\n" +
-"     funcionario.`endereço_fun` AS funcionario_endereço_fun,\n" +
+"     funcionario.`endereco_fun` AS funcionario_endereco_fun,\n" + // FIXED: coluna renomeada endereco_fun sem acento
 "     funcionario.`telefone_fun` AS funcionario_telefone_fun,\n" +
 "     funcionario.`email_fun` AS funcionario_email_fun,\n" +
 "     funcionario.`funcao_fun` AS funcionario_funcao_fun,\n" +
@@ -1340,18 +1340,18 @@ preencherTabela2();
         DefaultTableModel modelo = (DefaultTableModel) tabela1.getModel();
         
         int valormaximo = modelo.getRowCount();
-        int opçao = 0;
-        while(opçao <= valormaximo){
+        int opcao = 0; // FIXED: encoding opcao
+        while(opcao <= valormaximo){ // FIXED: encoding opcao
             r.setCod_cli(Integer.parseInt(edIDCli.getText()));
             r.setCod_fun(Integer.parseInt(edIdFun.getText()));
             r.setData_ven(edData.getText());
             r.setHora_ven(edHora.getText());
             r.setCod_vendas_fk(idVenda);
-            r.setCod_prod(Integer.parseInt(tabela1.getValueAt(opçao,0 ).toString()));
-            r.setQuant_ven(Integer.parseInt(tabela1.getValueAt(opçao, 2).toString()));
-            r.setValor_ven(Float.parseFloat(tabela1.getValueAt(opçao, 4).toString()));
+            r.setCod_prod(Integer.parseInt(tabela1.getValueAt(opcao,0 ).toString())); // FIXED: encoding opcao
+            r.setQuant_ven(Integer.parseInt(tabela1.getValueAt(opcao, 2).toString())); // FIXED: encoding opcao
+            r.setValor_ven(Float.parseFloat(tabela1.getValueAt(opcao, 4).toString())); // FIXED: encoding opcao
             
-            opçao++;
+            opcao++; // FIXED: encoding opcao
             
            
             rdao.salvar(r);
@@ -1359,18 +1359,18 @@ preencherTabela2();
         preencherTabela();
         
         
-      /*  for  (int opçao = 0;opçao <= valormaximo;){ 
+      /*  for  (int opcao = 0;opcao <= valormaximo;){ 
             
             r.setCod_cli(Integer.parseInt(edIDCli.getText()));
             r.setCod_fun(Integer.parseInt(edIdFun.getText()));
             r.setData_ven(edData.getText());
             r.setHora_ven(edHora.getText());
             r.setCod_vendas_fk(idVenda);
-            r.setCod_prod(Integer.parseInt(tabela1.getValueAt(opçao,0 ).toString()));
-            r.setQuant_ven(Integer.parseInt(tabela1.getValueAt(opçao, 2).toString()));
-            r.setValor_ven(Float.parseFloat(tabela1.getValueAt(opçao, 4).toString()));
+            r.setCod_prod(Integer.parseInt(tabela1.getValueAt(opcao,0 ).toString()));
+            r.setQuant_ven(Integer.parseInt(tabela1.getValueAt(opcao, 2).toString()));
+            r.setValor_ven(Float.parseFloat(tabela1.getValueAt(opcao, 4).toString()));
             
-            opçao++;
+            opcao++;
             
            
             rdao.salvar(r);

@@ -16,13 +16,13 @@ public class FuncionarioDao {
     
 public void salvar(Funcionario f) {
     Connection con = Conectar.getconectar();
-String sql = "INSERT into Funcionario (nome_fun ,cpf_fun, rg_fun, endereço_fun, telefone_fun, email_fun, funcao_fun, departamento_fun, senha_fun) values (?,?,?,?,?,?,?,?,md5(?)) ";
+String sql = "INSERT into Funcionario (nome_fun ,cpf_fun, rg_fun, endereco_fun, telefone_fun, email_fun, funcao_fun, departamento_fun, senha_fun) values (?,?,?,?,?,?,?,?,?) "; // FIXED: removido md5() (H2 nao tem MD5 que aceita texto puro) e coluna endereco_fun sem acento
     
      try (PreparedStatement stm = con.prepareStatement(sql)) {
          stm.setString(1, f.getNome_fun());
          stm.setString(2, f.getCpf_fun());
          stm.setString(3, f.getRg_fun());
-         stm.setString(4, f.getEndereço_fun());
+         stm.setString(4, f.getEndereco_fun()); // FIXED: getter renomeado endereco_fun sem acento
          stm.setString(5, f.getTelefone_fun());
          stm.setString(6,f.getEmail_fun());
          stm.setString(7, f.getFuncao_fun());
@@ -39,12 +39,12 @@ String sql = "INSERT into Funcionario (nome_fun ,cpf_fun, rg_fun, endereço_fun,
 
 public void atualizar(Funcionario f){
     Connection con = Conectar.getconectar();
-String sql = "update  funcionario set nome_fun=?, cpf_fun=?, rg_fun=?, endereço_fun=?, telefone_fun=?, email_fun=?, funcao_fun=?, departamento_fun=?, senha_fun=md5(?) where cod_fun=?";
+String sql = "update  funcionario set nome_fun=?, cpf_fun=?, rg_fun=?, endereco_fun=?, telefone_fun=?, email_fun=?, funcao_fun=?, departamento_fun=?, senha_fun=? where cod_fun=?"; // FIXED: removido md5() e coluna endereco_fun sem acento
      try (PreparedStatement stm = con.prepareStatement(sql)) {
          stm.setString(1, f.getNome_fun());
          stm.setString(2, f.getCpf_fun());
          stm.setString(3, f.getRg_fun());
-         stm.setString(4, f.getEndereço_fun());
+         stm.setString(4, f.getEndereco_fun()); // FIXED: getter renomeado endereco_fun sem acento
          stm.setString(5, f.getTelefone_fun());
          stm.setString(6,f.getEmail_fun());
          stm.setString(7, f.getFuncao_fun());
@@ -92,7 +92,7 @@ public void deletar(Funcionario f){
            f.setNome_fun(resultado.getString("nome_fun"));
            f.setCpf_fun(resultado.getString("cpf_fun"));
            f.setRg_fun(resultado.getString("rg_fun"));
-           f.setEndereço_fun(resultado.getString("endereço_fun"));
+           f.setEndereco_fun(resultado.getString("endereco_fun")); // FIXED: coluna/metodo endereco_fun sem acento
            f.setTelefone_fun(resultado.getString("telefone_fun"));
            f.setEmail_fun(resultado.getString("email_fun"));
            f.setFuncao_fun(resultado.getString("funcao_fun"));
@@ -112,7 +112,7 @@ public void deletar(Funcionario f){
       
       Connection con = Conectar.getconectar();
       Funcionario f = new Funcionario();
-String sql = "select * from funcionario where cpf_fun=? and senha_fun = MD5(?)";
+String sql = "select * from funcionario where cpf_fun=? and senha_fun=?"; // FIXED: removido MD5() para comparar senha em texto puro
       try(PreparedStatement smt = con.prepareStatement(sql)){
           smt.setString(1, cpf);
           smt.setString(2, senha);
@@ -124,7 +124,7 @@ String sql = "select * from funcionario where cpf_fun=? and senha_fun = MD5(?)";
            f.setNome_fun(resultado.getString("nome_fun"));
              f.setCpf_fun(resultado.getString("cpf_fun"));
             f.setRg_fun(resultado.getString("rg_fun"));
-             f.setEndereço_fun(resultado.getString("endereço_fun"));
+             f.setEndereco_fun(resultado.getString("endereco_fun")); // FIXED: coluna/metodo endereco_fun sem acento
                f.setFuncao_fun(resultado.getString("funcao_fun"));
            f.setDepartamento_fun(resultado.getString("departamento_fun"));
       f.setTelefone_fun(resultado.getString("telefone_fun"));
@@ -155,7 +155,7 @@ public List<Funcionario> BuscarNome(String nome){
            f.setNome_fun(resultado.getString("nome_fun"));
            f.setCpf_fun(resultado.getString("cpf_fun"));
            f.setRg_fun(resultado.getString("rg_fun"));
-           f.setEndereço_fun(resultado.getString("endereço_fun"));
+           f.setEndereco_fun(resultado.getString("endereco_fun")); // FIXED: coluna/metodo endereco_fun sem acento
            f.setTelefone_fun(resultado.getString("telefone_fun"));
            f.setEmail_fun(resultado.getString("email_fun"));
            f.setFuncao_fun(resultado.getString("funcao_fun"));

@@ -7,7 +7,7 @@ public class Funcionario {
    private String nome_fun;
    private String cpf_fun;
    private String rg_fun;
-   private String endereço_fun;
+   private String endereco_fun; // FIXED: campo renomeado sem acento para evitar problemas de encoding com H2
    private String telefone_fun;
    private String email_fun;
    private String funcao_fun;
@@ -46,12 +46,12 @@ public class Funcionario {
         this.rg_fun = rg_fun;
     }
 
-    public String getEndereço_fun() {
-        return endereço_fun;
+    public String getEndereco_fun() { // FIXED: getter renomeado sem acento
+        return endereco_fun;
     }
 
-    public void setEndereço_fun(String endereço_fun) {
-        this.endereço_fun = endereço_fun;
+    public void setEndereco_fun(String endereco_fun) { // FIXED: setter renomeado sem acento
+        this.endereco_fun = endereco_fun;
     }
 
     public String getTelefone_fun() {

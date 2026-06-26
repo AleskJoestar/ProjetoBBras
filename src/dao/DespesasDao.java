@@ -31,7 +31,7 @@ String sql = "INSERT into Despesas (valor_desp, desc_desp,data_Desp,hora_desp) v
     
      public void atualizar(Despesas d){
     Connection con = Conectar.getconectar();
-    String sql = "update Despesas set valor_desp, desc_desp,data_Desp,hora_desp where cod_desp=?";
+    String sql = "update Despesas set valor_desp=?, desc_desp=?, data_Desp=?, hora_desp=? where cod_desp=?"; // FIXED: SET sem '=?' nas colunas tornava o UPDATE invalido
      try (PreparedStatement stm = con.prepareStatement(sql)) {
          stm.setDouble(1, d.getValor_desp());
          stm.setString(2, d.getDesc_desp());

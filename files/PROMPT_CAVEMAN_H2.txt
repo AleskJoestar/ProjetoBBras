@@ -1,0 +1,116 @@
+ROLE: senior java dev
+TASK: migrate legacy NetBeans java project from MySQL to H2 embedded database + fix bugs
+
+## PROJECT STRUCTURE
+root: PROJETODS-MASTER/
+  src/
+    dao/        → CaixaDao, ClienteDao, DespesasDao, FornecedorDao,
+                  FuncionarioDao, MercadoriasDao, ProdutoDao,
+                  RealizarVendasDao, ReceberContasDao, VendasDao
+    formulario/ → FormCaixa, FormCliente, FormDespesas, FormFornecedor,
+                  FormFuncionario, FormMenu, FormMercadorias, FormProduto,
+                  FormReceberContas, FormRVendas, Login
+    mapeamento/ → Caixa, Cliente, Despesas, Fornecedor, Funcionario,
+                  Mercadorias, Produto, RealizarVendas, ReceberContas, VendasTotais
+    pesquisa/   → pesquisaCliente, pesquisaFornece, pesquisaFuncionario, pesquisaProduto
+    teste/      → TesteConectar (entry point → abre Login.java)
+    utilitario/ → Conectar.java  ← SUBSTITUIR pelo arquivo fornecido
+  build.xml (ANT — sem pom.xml)
+
+## DB CONFIG — H2 EMBARCADO (sem instalação de servidor)
+engine   : H2 Database (arquivo local, zero instalação)
+url      : jdbc:h2:~/projetods;AUTO_SERVER=TRUE
+user     : sa
+pass     : (vazio)
+driver   : org.h2.Driver
+arquivo  : ~/projetods.mv.db  (criado automaticamente na 1ª execução)
+JAR      : h2-2.2.224.jar → colocar em lib/
+download : https://repo1.maven.org/maven2/com/h2database/h2/2.2.224/h2-2.2.224.jar
+
+## TABLES (10 tabelas — criadas automaticamente pelo Conectar.java)
+cliente        → cod_cli(PK), nome_cli, cpf_cli, rg_cli, sexo_cli, datanasc_cli, endereco_cli, telefone_cli, email_cli
+fornecedor     → cod_for(PK), nomeFant_for, razaoSoci_for, cnpj_for, cep_for, ende_for, tel_for, email_for, resp_for, cidade_for
+funcionario    → cod_fun(PK), nome_fun, cpf_fun, rg_fun, endereco_fun, telefone_fun, email_fun, funcao_fun, departamento_fun, senha_fun(texto puro)
+produto        → cod_prod(PK), nome_prod, valor_prod(FLOAT), cod_for_fk(FK→fornecedor)
+mercadorias    → cod_merc(PK), quant_merc, data_merc, hora_merc, cod_prod_fk(FK→produto), cod_fun_fk(FK→funcionario)
+vendas         → cod_vendas(PK), valortotal_vendas, valorpago_vendas, valortroco_vendas, valordesconto_vendas, cod_cli_fk, cod_fun_fk
+venda          → cod_ven(PK), valor_ven, hora_ven, data_ven, quant_ven, cod_cli_fk, cod_fun_fk, cod_prod_fk, cod_vendas_fk(FK→vendas)
+receber        → cod_rec(PK), valor_rec, hora_rec, dia_rec, cod_ven(FK→vendas)
+despesas       → cod_desp(PK), valor_desp, desc_desp, data_desp, hora_desp
+caixareceitas  → cod_cair(PK), receitas_cai, data_cai, hora_cai
+caixadespesas  → cod_caid(PK), despesas_cai, data_caid, hora_caid
+
+## LOGIN TESTE (seed automático no primeiro boot)
+CPF   : 00000000000
+senha : admin123
+
+## KNOWN BUGS — FIX IN ORDER
+
+BUG1 [CRÍTICO] imports net.sf.jasperreports.* não resolvidos
+  - JARs do JasperReports ausentes em lib/
+  - baixar jasperreports-6.20.0 full zip e copiar todos os JARs para lib/
+  - URL: https://sourceforge.net/projects/jasperreports/files/jasperreports/6.20.0/
+  - atualizar .vscode/settings.json: "java.project.referencedLibraries": ["lib/**/*.jar"]
+
+BUG2 [CRÍTICO] FuncionarioDao.java — senha com MD5 (incompatível com H2 e modo texto puro)
+  - remover md5(?) de TODOS os SQLs de INSERT, UPDATE e SELECT do FuncionarioDao
+  - INSERT: "...senha_fun) values (?,?,?,?,?,?,?,?,?)"  ← último ? direto, sem md5()
+  - UPDATE: "...senha_fun=? where cod_fun=?"            ← sem md5()
+  - SELECT login: "where cpf_fun=? and senha_fun=?"     ← sem MD5()
+
+BUG3 [CRÍTICO] FuncionarioDao.java — nome da coluna endereço_fun (tem acento ç)
+  - H2 tem problema com identificadores acentuados
+  - substituir TODAS as ocorrências de "endereço_fun" por "endereco_fun" no DAO
+  - mesma troca no mapeamento/Funcionario.java (getter/setter)
+
+BUG4 [MÉDIO] DespesasDao.java — método atualizar() — SQL malformado
+  - original: "update Despesas set valor_desp, desc_desp, data_Desp, hora_desp where cod_desp=?"
+  - fix:      "update Despesas set valor_desp=?, desc_desp=?, data_Desp=?, hora_desp=? where cod_desp=?"
+
+BUG5 [MÉDIO] RealizarVendasDao.java — método listaTodosprod()
+  - resultado.getInt("cod_prod") → coluna não existe, nome real é "cod_prod_fk"
+  - fix: resultado.getInt("cod_prod_fk")
+
+BUG6 [BAIXO] VendasDao, RealizarVendasDao, CaixaDao — múltiplos ResultSets paralelos
+  - loop para na menor quantidade de linhas entre os ResultSets
+  - não impede execução, só pode truncar listagens
+  - fix ideal: reescrever com JOIN; ignorar por ora se quiser só rodar
+
+## AGENT 1 — DEPENDENCIES
+1. create lib/ folder if missing
+2. download h2-2.2.224.jar → lib/
+3. download jasperreports-6.20.0 JARs → lib/
+4. create/update .vscode/settings.json:
+   { "java.project.referencedLibraries": ["lib/**/*.jar"] }
+5. verify red import errors gone
+
+## AGENT 2 — REPLACE Conectar.java
+1. replace utilitario/Conectar.java with the provided Conectar_H2.java content
+2. the new Conectar.java auto-creates all tables and seed data on first run
+3. no SQL scripts to run manually — banco é criado automaticamente
+4. DO NOT change class name or package — keep "public class Conectar"
+
+## AGENT 3 — FIX DAOs
+1. FuncionarioDao.java: remove md5() from all SQLs (BUG2)
+2. FuncionarioDao.java: rename endereço_fun → endereco_fun everywhere (BUG3)
+3. mapeamento/Funcionario.java: rename field/getter/setter endereço → endereco (BUG3)
+4. DespesasDao.java: fix malformed UPDATE sql (BUG4)
+5. RealizarVendasDao.java: fix cod_prod → cod_prod_fk (BUG5)
+6. comment every change: // FIXED: <reason>
+
+## AGENT 4 — RUN
+1. confirm main: teste.TesteConectar → opens formulario.Login
+2. create .vscode/launch.json:
+   mainClass: "teste.TesteConectar"
+3. run → Login window must open
+4. test login CPF=00000000000 / senha=admin123
+5. report remaining errors with file:line
+
+## CONSTRAINTS
+- do NOT convert ANT to Maven
+- do NOT modify .form files (NetBeans GUI metadata)
+- do NOT refactor business logic
+- preserve all class/method names exactly
+- only rename endereço_fun → endereco_fun (necessary for H2 compatibility)
+- comment every change made
+- ask before any destructive action

@@ -176,7 +176,7 @@ public void deletar(RealizarVendas p){
        ResultSet resultado = stm.executeQuery();
        while (resultado.next()) {
            RealizarVendas v = new RealizarVendas();
-           v.setCod_prod(resultado.getInt("cod_prod"));
+           v.setCod_prod(resultado.getInt("cod_prod_fk")); // FIXED: tabela venda usa a coluna cod_prod_fk
            listarVendas.add(v);
        }
           stm.close();
