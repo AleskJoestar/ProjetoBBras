@@ -1005,7 +1005,12 @@ int opcao = tabela1.getSelectedRow();
         nm=0;
         edTotal.setText("0");
         edtotal2.setText("0");
-        for (int i = 0; i <= count; i++) {
+        // FIXED: guarda contra tabela vazia antes de ler valores das linhas
+        if (count <= 0) {
+            JOptionPane.showMessageDialog(null, "Selecione um produto na tabela.");
+            return;
+        }
+        for (int i = 0; i < count; i++) { // FIXED: off-by-one (i <= count lia getValueAt(rowCount) inexistente -> ArrayIndexOutOfBoundsException)
             nm= Double.parseDouble(tabela1.getValueAt(i, 4).toString());
             a=Double.parseDouble(edTotal.getText());
             b=(a+nm);
@@ -1341,7 +1346,7 @@ preencherTabela2();
         
         int valormaximo = modelo.getRowCount();
         int opcao = 0; // FIXED: encoding opcao
-        while(opcao <= valormaximo){ // FIXED: encoding opcao
+        while(opcao < valormaximo){ // FIXED: off-by-one (<= acessava linha inexistente getValueAt(rowCount) e quebrava a finalizacao da venda)
             r.setCod_cli(Integer.parseInt(edIDCli.getText()));
             r.setCod_fun(Integer.parseInt(edIdFun.getText()));
             r.setData_ven(edData.getText());
@@ -1389,10 +1394,15 @@ preencherTabela2();
 
         t.setCod_cli_fk(Integer.parseInt(edIDCli.getText()));
         t.setCod_fun_fk(Integer.parseInt(edIdFun.getText()));
-        t.setValortotal_vendas(Double.parseDouble(edTotal.getText()));
-        t.setValorpago_vendas(Double.parseDouble(edPago.getText()));
-        t.setValortroco_vendas(Double.parseDouble(edTroco.getText()));
-        t.setValordesconto_vendas(Double.parseDouble(edDesc.getText()));
+        // FIXED: campos vazios causavam NumberFormatException em Double.parseDouble("") ao finalizar; assume 0.0 quando vazio
+        String valTotal = edTotal.getText().trim();
+        String valPago = edPago.getText().trim();
+        String valTroco = edTroco.getText().trim();
+        String valDesc = edDesc.getText().trim();
+        t.setValortotal_vendas(valTotal.isEmpty() ? 0.0 : Double.parseDouble(valTotal)); // FIXED: guarda contra string vazia
+        t.setValorpago_vendas(valPago.isEmpty() ? 0.0 : Double.parseDouble(valPago)); // FIXED: guarda contra string vazia
+        t.setValortroco_vendas(valTroco.isEmpty() ? 0.0 : Double.parseDouble(valTroco)); // FIXED: guarda contra string vazia
+        t.setValordesconto_vendas(valDesc.isEmpty() ? 0.0 : Double.parseDouble(valDesc)); // FIXED: guarda contra string vazia
         vdao.salvar(t);
         preencherTabela2();
     }

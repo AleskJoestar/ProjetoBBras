@@ -23,7 +23,7 @@ public class CaixaDao {
     public List<Caixa> receitas(String nome){
    Connection con = Conectar.getconectar();
    List <Caixa> listaReceita  = new ArrayList<>();
-   String sql = "select sum(receitas_cai) as Receitas from caixareceitas";
+   String sql = "select COALESCE(sum(receitas_cai),0) as Receitas from caixareceitas"; // FIXED: COALESCE evita SUM() retornar NULL quando a tabela esta vazia
    String sql2 = "select hora_cai,data_cai from caixareceitas";
    
    try(PreparedStatement stm = con.prepareStatement(sql);
@@ -50,7 +50,7 @@ public class CaixaDao {
      public List<Caixa> despesas(String nome){
    Connection con = Conectar.getconectar();
    List <Caixa> listadespesas  = new ArrayList<>();
-   String sql = "select sum(despesas_cai) as Despesas from caixadespesas";
+   String sql = "select COALESCE(sum(despesas_cai),0) as Despesas from caixadespesas"; // FIXED: COALESCE evita SUM() retornar NULL quando a tabela esta vazia
    String sql2 = "select hora_caiD,data_caiD from caixadespesas";
    
    try(PreparedStatement stm = con.prepareStatement(sql);

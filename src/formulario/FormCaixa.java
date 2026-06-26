@@ -30,6 +30,11 @@ public class FormCaixa extends javax.swing.JDialog {
       Receita();
       Despesa();
        
+       // FIXED: campos vazios (tabelas caixa sem registros) causavam NumberFormatException
+       // no construtor e impediam a tela de Caixa de abrir; assume "0" quando vazio
+       if (edReceitas.getText().trim().isEmpty()) edReceitas.setText("0");
+       if (edDespesas.getText().trim().isEmpty()) edDespesas.setText("0");
+
        Double a,b,d;
        a = Double.valueOf(edReceitas.getText());
        b = Double.valueOf(edDespesas.getText());
